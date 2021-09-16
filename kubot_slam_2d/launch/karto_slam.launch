@@ -1,0 +1,13 @@
+<launch>
+	<arg name="use_imu" default="false" doc="use imu ekf in KUBOT"/>
+
+	<include file="$(find kubot_bringup)/launch/robot.launch">
+		<arg name="use_imu" value="$(arg use_imu)"/>
+	</include>
+
+	<param name="use_sim_time" value="false" />
+
+	<include file="$(find kubot_navigation)/launch/include/move_base.launch.xml" />
+
+	<include file="$(find kubot_slam_2d)/launch/include/karto_mapping.launch.xml" />
+</launch>

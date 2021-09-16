@@ -1,0 +1,7 @@
+<launch>
+	<arg name="model" default="$(env KUBOT_MODEL)" doc="model type [kubot2, wagv, aider ,neuronbot2 ,galiray2]"/>
+
+	<node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter">
+		<rosparam command = "load" file = "$(find kubot_lidar)/params/box_filter_$(arg model).yaml"/>
+	</node>
+</launch>

@@ -1,0 +1,29 @@
+<launch>
+	<arg name="model" default="$(env KUBOT_MODEL)" doc="model type [kubot2, wagv, aider ,neuronbot2 ,galiray2]"/>
+	<arg name="lidar" default="$(env KUBOT_LIDAR)" doc="model type [non-lidar, rplidar-a1, rplidar-a2, rplidar-a3, rplidar-s1, eai-x4, eai-g4, xtion, kinectV1, kinectV2, astra, eai-x4, d435i, sick-tim551, hokuyo-10ls, two-rplidar-a2 ]"/>
+	<arg name="sensor" default="$(env KUBOT_3DSENSOR)" doc="model type [non-3dsensor, xtion, astra, kinectV1, kinectV2, d435i, logi-c615]"/>
+	<arg name="open_rviz" default="true"/>
+
+	<include file="$(find kubot_lidar)/launch/ira_lidar_example.launch"/>
+
+	<include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+		<arg name="time" value="2" />
+		<arg name="pkg" value="kubot_lidar" />
+		<arg name="file" value="lidar_filter.launch" />
+		<arg name="node_name" value="timed_roslaunch" />
+	</include>
+
+	<include file="$(find kubot_navigation)/launch/include/move_base.launch.xml" />
+
+	<node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+		-configuration_directory
+			$(find kubot_slam_2d)/configuration_files
+			-configuration_basename lidar_2d_v1.0_odom.lua" output="screen">
+	</node>
+	<!-- Additional node which converts Cartographer map into ROS occupancy grid map. Not used and can be skipped in this case -->
+	<node name="cartographer_occupancy_grid_node" pkg="cartographer_ros" type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+	<group if="$(arg open_rviz)">
+		<node name="rviz" pkg="rviz" type="rviz" required="true" args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
+	</group>
+</launch>

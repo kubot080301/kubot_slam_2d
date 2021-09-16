@@ -1,0 +1,26 @@
+<launch>
+	<arg name="model" default="$(env KUBOT_MODEL)" doc="model type [kubot2, wagv, aider ,neuronbot2 ,galiray2]"/>
+	<arg name="lidar" default="$(env KUBOT_LIDAR)" doc="model type [non-lidar, rplidar-a1, rplidar-a2, rplidar-a3, rplidar-s1, eai-x4, eai-g4, xtion, kinectV1, kinectV2, astra, eai-x4, d435i, sick-tim551, hokuyo-10ls, two-rplidar-a2 ]"/>
+	<arg name="sensor" default="$(env KUBOT_3DSENSOR)" doc="model type [non-3dsensor, xtion, astra, kinectV1, kinectV2, d435i, logi-c615]"/>
+	<arg name="open_rviz" default="true"/>
+	<arg name="local_planner" default="dwa" doc="local planner of dwa or teb" />
+
+	<include file="$(find kubot_lidar)/launch/ira_lidar_example.launch"/>
+
+	<include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+		<arg name="time" value="2" />
+		<arg name="pkg" value="kubot_lidar" />
+		<arg name="file" value="lidar_filter.launch" />
+		<arg name="value" value="arg1:=1.2" />
+	</include>
+
+	<include file="$(find kubot_navigation)/launch/include/move_base.launch.xml">
+		<arg name="local_planner" default="$(arg local_planner)"/>
+	</include>
+	
+	<include file="$(find kubot_slam_2d)/launch/include/gmapping.launch.xml" />
+
+	<group if="$(arg open_rviz)">
+		<node name="rviz" pkg="rviz" type="rviz" args="-d $(find kubot_navigation)/rviz/view_navigation.rviz" />
+	</group>
+</launch>

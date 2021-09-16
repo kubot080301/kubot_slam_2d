@@ -1,0 +1,18 @@
+<launch>
+	<arg name="use_odom" value="false" doc="use motor odom in KUBOT"/>
+
+	<include file="$(find kubot_bringup)/launch/robot.launch">
+		<arg name="use_odom" value="$(arg use_odom)"/>
+	</include>
+
+	<param name="use_sim_time" value="false" />
+
+	<include file="$(find kubot_navigation)/launch/include/move_base.launch.xml">
+
+		<include file="$(find kubot_slam_2d)/launch/include/hector_mapping_without_odom.launch.xml"/>
+
+		<include file="$(find kubot_slam_2d)/launch/include/geotiff_mapper.launch.xml">
+			<arg name="trajectory_source_frame_name" value="scanmatcher_frame"/>
+		</include>
+	</include>
+</launch>

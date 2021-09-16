@@ -1,0 +1,38 @@
+<launch>
+	<!-- 1st Rplidar -->
+	<node name="rplidarNode1" ns ="lidar1" pkg="rplidar_ros" type="rplidarNode" output="screen">
+		<param name="serial_port" type="string" value="/dev/rplidar_1"/>
+		<param name="serial_baudrate" type="int" value="115200"/>
+		<param name="frame_id" type="string" value="lidar1_link"/>
+		<param name="inverted" type="bool" value="false"/>
+		<param name="angle_compensate" type="bool" value="true"/>
+		<!-- param name="scan_mode" type="string" value="Sensitivity"/>
+	<param name="min_distance" type="double" value="0.02"/i -->
+	</node>
+
+	<!-- 2nd Rplidar -->
+	<node name="rplidarNode2" ns ="lidar2" pkg="rplidar_ros" type="rplidarNode" output="screen">
+		<param name="serial_port" type="string" value="/dev/rplidar_2"/>
+		<param name="serial_baudrate" type="int" value="115200"/>
+		<param name="frame_id" type="string" value="lidar2_link"/>
+		<param name="inverted" type="bool" value="false"/>
+		<param name="angle_compensate" type="bool" value="true"/>
+		<!-- param name="scan_mode" type="string" value="Sensitivity"/>
+	<param name="min_distance" type="double" value="0.02"/i -->
+	</node>
+
+	<!-- Lidar Mixing 1st and 2nd -->
+	<node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+		<param name="destination_frame" value="laser_link"/>
+		<param name="cloud_destination_topic" value="/merged_cloud"/>
+		<param name="scan_destination_topic" value="/scan"/>
+		<param name="laserscan_topics" value ="/lidar1/scan /lidar2/scan" />
+
+		<param name="angle_min" value="-3.14"/>
+		<param name="angle_max" value="3.14"/>
+		<param name="angle_increment" value="0.006"/>
+		<param name="scan_time" value="0.0333333"/>
+		<param name="range_min" value="0.12"/>
+		<param name="range_max" value="50.0"/>
+	</node>
+</launch>
